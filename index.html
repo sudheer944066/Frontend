@@ -32,6 +32,7 @@
         }
         .content {
             padding: 20px;
+            flex-grow: 1;
         }
         .Home-header {
             margin: 10px 20px;
@@ -69,10 +70,9 @@
 <body>
     <div class="sidebar">
         <h2>My website</h2>
-         
         <a href="#">Home</a>
         <a href="calender.html">My budget</a>
-        <a href="">My fav Music </a>
+        <a href="">My fav Music</a>
         <a href="#">Settings</a>
     </div>
     <div class="content">
@@ -89,51 +89,63 @@
         let currentAudio = null;
         let currentButton = null;
         let index = 0;
-        audio(index);
 
-        function audio(index) {
-            let hi = Music[index];
-            let aud = `
+        function audio(newIndex) {
+            index = newIndex; // Update global index
+            let song = Music[index];
+
+            let audioHTML = ` 
                 <div class="Home-header">
-                    <img src="${hi.img}" alt="${hi.name}" width="150" height="150">
+                    <img src="${song.img}" alt="${song.name}" width="150" height="150">
                     <div class="controls">
-                        <audio id="${hi.name}">
-                            <source src="${hi.src}" type="audio/mpeg">
+                        <audio id="audio-player">
+                            <source src="${song.src}" type="audio/mpeg">
                         </audio>
-                        <button class="control-btn" onclick="pre(${index})">⏮</button>
-                        <button class="control-btn play-btn" onclick="togglePlay(this, '${hi.name}')">▶</button>
-                        <button class="control-btn" onclick="next(${index})">⏭</button>
+                        <button class="control-btn" onclick="pre()">⏮</button>
+                        <button class="control-btn play-btn" onclick="togglePlay()">▶</button>
+                        <button class="control-btn" onclick="next()">⏭</button>
                     </div>
                 </div>`;
-            document.querySelector(".Home").innerHTML = aud;
+            
+            document.querySelector(".Home").innerHTML = audioHTML;
+            currentAudio = document.getElementById("audio-player");
         }
 
-        function next(index) {
+        function next() {
             if (index < Music.length - 1) {
+                stopAudio();
                 audio(index + 1);
             }
         }
-        
-        function pre(index) {
+
+        function pre() {
             if (index > 0) {
+                stopAudio();
                 audio(index - 1);
             }
         }
 
-        function togglePlay(button, audioId) {
-            let audio = document.getElementById(audioId);
-            if (audio.paused) {
-                audio.play();
+        function togglePlay() {
+            if (!currentAudio) return;
+            let button = document.querySelector(".play-btn");
+
+            if (currentAudio.paused) {
+                currentAudio.play();
                 button.innerText = "❚❚";
-                currentAudio = audio;
-                currentButton = button;
             } else {
-                audio.pause();
+                currentAudio.pause();
                 button.innerText = "▶";
-                currentAudio = null;
-                currentButton = null;
             }
         }
+
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        }
+
+        audio(index); // Load first song on page load
     </script>
 </body>
 </html>
